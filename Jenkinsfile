@@ -5,21 +5,14 @@ pipeline {
     stage('Build') {
       steps {
         // Build the project using Maven
-        sh 'mvn clean install'
+        sh './mvnw clean install -P buildDocker'
       }
     }
     
-    stage('Test') {
+    stage('List files') {
       steps {
         // Run the project's unit tests using Maven
-        sh 'mvn test'
-      }
-    }
-    
-    stage('Deploy') {
-      steps {
-        // Deploy the project using Maven
-        sh 'mvn deploy'
+        sh 'ls -al'
       }
     }
   }
