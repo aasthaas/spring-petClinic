@@ -1,21 +1,31 @@
 pipeline {
   agent any
-  
+  tools {
+    maven 'maven-3.6.3' 
+  }
   stages {
-    stage('Build') {
+    stage('Checkout') {
       steps {
-        // Build the project using Maven
-        sh 'docker --version'
-        sh 'java --version'
-        sh 'echo $JAVA_HOME'
-        sh './mvnw clean install -P buildDocker'
+        git branch: 'master', url: 'https://github.com/aasthaas/spring-petClinic.git'
+		}
+    }
+    stage ('Build') {
+      steps {
+        sh 'mvn clean install -DskipTests'
       }
     }
-    
-    stage('List files') {
+	stage ('Test') {
       steps {
-        // Run the project's unit tests using Maven
-        sh 'ls -al'
+        sh 'mvn clean test'
+      }
+    }
+    stage ('Deploy') {
+      steps {
+        sh '''
+            sudo docker system prune -a --volumes -f
+            sudo docker compose up -d --no-color --wait
+			sudo docker compose ps
+        '''
       }
     }
   }
